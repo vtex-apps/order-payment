@@ -1,9 +1,20 @@
-import React, { createContext, ReactNode, useContext } from 'react'
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
+import { useQuery, useMutation } from 'react-apollo'
+import { cardSessionId as CardSessionIdQuery } from 'vtex.checkout-resources/Queries'
+import { savePaymentToken as SavePaymentToken } from 'vtex.checkout-resources/Mutations'
+import { PaymentToken } from 'vtex.checkout-graphql'
 
 //import { useOrderForm } from 'vtex.order-manager/OrderForm'
 
 interface Context {
   getCardSessionId: () => string
+  savePayment: (paymentTokens: PaymentToken[]) => any
 }
 
 interface OrderPaymentProps {
@@ -13,11 +24,29 @@ interface OrderPaymentProps {
 const OrderPaymentContext = createContext<Context | undefined>(undefined)
 
 export const OrderPaymentProvider = ({ children }: OrderPaymentProps) => {
+  const [cardSessionId, setCardSessionId] = useState<string>('')
+  //refect
+  const { client, loading: loadingQuery, data } = useQuery(CardSessionIdQuery)
+  const [savePaymentToken] = useMutation(SavePaymentToken)
 
-  const getCardSessionId = () => '5f1fe23b-9fd1-417d-a4aa-14df38e7746e-637147976911429634'
+  function savePayment(paymentTokens: PaymentToken[]) {
+    return savePaymentToken({ variables: { paymentTokens } })
+  }
+
+  const getCardSessionId = () => cardSessionId
+
+  useEffect(() => {
+    if (loadingQuery) {
+      return
+    }
+
+    if (data) {
+      setCardSessionId(data.getCardSessionId)
+    }
+  }, [client, loadingQuery, data])
 
   return (
-    <OrderPaymentContext.Provider value={{ getCardSessionId }}>
+    <OrderPaymentContext.Provider value={{ getCardSessionId, savePayment }}>
       {children}
     </OrderPaymentContext.Provider>
   )
