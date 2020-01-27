@@ -13,7 +13,8 @@ import { PaymentToken } from 'vtex.checkout-graphql'
 //import { useOrderForm } from 'vtex.order-manager/OrderForm'
 
 interface Context {
-  getCardSessionId: () => string
+  getCardSessionId: () => any
+  cardSessionId: string
   savePayment: (paymentTokens: PaymentToken[]) => any
 }
 
@@ -24,16 +25,19 @@ interface OrderPaymentProps {
 const OrderPaymentContext = createContext<Context | undefined>(undefined)
 
 export const OrderPaymentProvider = ({ children }: OrderPaymentProps) => {
-  const [cardSessionId, setCardSessionId] = useState<string>('')
-  //refect
-  const { client, loading: loadingQuery, data } = useQuery(CardSessionIdQuery)
   const [savePaymentToken] = useMutation(SavePaymentToken)
 
   function savePayment(paymentTokens: PaymentToken[]) {
     return savePaymentToken({ variables: { paymentTokens } })
   }
 
-  const getCardSessionId = () => cardSessionId
+  const [cardSessionId, setCardSessionId] = useState<string>('')
+
+  const { client, loading: loadingQuery, data, refetch } = useQuery(
+    CardSessionIdQuery
+  )
+
+  const getCardSessionId = () => refetch()
 
   useEffect(() => {
     if (loadingQuery) {
@@ -46,7 +50,9 @@ export const OrderPaymentProvider = ({ children }: OrderPaymentProps) => {
   }, [client, loadingQuery, data])
 
   return (
-    <OrderPaymentContext.Provider value={{ getCardSessionId, savePayment }}>
+    <OrderPaymentContext.Provider
+      value={{ getCardSessionId, cardSessionId, savePayment }}
+    >
       {children}
     </OrderPaymentContext.Provider>
   )
