@@ -26,11 +26,9 @@
     "prettier": "^1.18.2",
     "tslint-eslint-rules": "^5.4.0",
     "typescript": "3.7.3",
-    "vtex.styleguide": "http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.styleguide@9.105.5/public/@types/vtex.styleguide",
-    "vtex.checkout-resources": "https://teste--qastore.myvtex.com/_v/private/typings/linked/v1/vtex.checkout-resources@0.15.0+build1579270498/public/@types/vtex.checkout-resources",
-    "vtex.order-manager": "http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.order-manager@0.6.9/public/@types/vtex.order-manager",
-    "vtex.checkout-graphql": "https://teste--qastore.myvtex.com/_v/private/typings/linked/v1/vtex.checkout-graphql@0.20.1+build1579624697/public/@types/vtex.checkout-graphql",
-    "vtex.render-runtime": "http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.render-runtime@8.90.1/public/@types/vtex.render-runtime"
+    "vtex.checkout-resources": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.checkout-resources@0.18.0/public/@types/vtex.checkout-resources",
+    "vtex.render-runtime": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.93.0/public/@types/vtex.render-runtime",
+    "vtex.styleguide": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.styleguide@9.112.3/public/@types/vtex.styleguide"
   },
   "version": "0.2.2"
 }

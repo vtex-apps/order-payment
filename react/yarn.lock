@@ -5351,25 +5351,17 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-"vtex.checkout-graphql@https://teste--qastore.myvtex.com/_v/private/typings/linked/v1/vtex.checkout-graphql@0.20.1+build1579624697/public/@types/vtex.checkout-graphql":
-  version "0.20.1"
-  resolved "https://teste--qastore.myvtex.com/_v/private/typings/linked/v1/vtex.checkout-graphql@0.20.1+build1579624697/public/@types/vtex.checkout-graphql#25e7a8f665be417cd1b5346eb55da0daa9752acc"
+"vtex.checkout-resources@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.checkout-resources@0.18.0/public/@types/vtex.checkout-resources":
+  version "0.18.0"
+  resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.checkout-resources@0.18.0/public/@types/vtex.checkout-resources#d0fc5740eb90378abbe5180afd4f1756ec379f38"
 
-"vtex.checkout-resources@https://teste--qastore.myvtex.com/_v/private/typings/linked/v1/vtex.checkout-resources@0.15.0+build1579270498/public/@types/vtex.checkout-resources":
-  version "0.15.0"
-  resolved "https://teste--qastore.myvtex.com/_v/private/typings/linked/v1/vtex.checkout-resources@0.15.0+build1579270498/public/@types/vtex.checkout-resources#bee0b19f28e88b2e99fe991e76ecb132cde25ab1"
+"vtex.render-runtime@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.93.0/public/@types/vtex.render-runtime":
+  version "8.93.0"
+  resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.93.0/public/@types/vtex.render-runtime#db45939964edf7c8a3adf12580901c50ad1a0c24"
 
-"vtex.order-manager@http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.order-manager@0.6.9/public/@types/vtex.order-manager":
-  version "0.6.9"
-  resolved "http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.order-manager@0.6.9/public/@types/vtex.order-manager#1347d65b9e85e20240dfe1230cf0728e2a729e02"
-
-"vtex.render-runtime@http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.render-runtime@8.90.1/public/@types/vtex.render-runtime":
-  version "8.90.1"
-  resolved "http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.render-runtime@8.90.1/public/@types/vtex.render-runtime#5695f99b1d854a0beefbef338b5347a837afde15"
-
-"vtex.styleguide@http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.styleguide@9.105.5/public/@types/vtex.styleguide":
-  version "9.105.5"
-  resolved "http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.styleguide@9.105.5/public/@types/vtex.styleguide#31b8970b6ce6818bb54a700cb0b8c2ba0388b179"
+"vtex.styleguide@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.styleguide@9.112.3/public/@types/vtex.styleguide":
+  version "9.112.3"
+  resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.styleguide@9.112.3/public/@types/vtex.styleguide#00ed67825b9222258ece08d92b2d9b5196604191"
 
 w3c-hr-time@^1.0.1:
   version "1.0.1"
