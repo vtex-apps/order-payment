@@ -1,11 +1,44 @@
 import React, { createContext, ReactNode, useContext } from 'react'
 import { useQuery, useMutation } from 'react-apollo'
 import { cardSessionId as CardSessionIdQuery } from 'vtex.checkout-resources/Queries'
-import { savePaymentToken as SavePaymentTokenMutation } from 'vtex.checkout-resources/Mutations'
-import { saveCards as SaveCardsMutation } from 'vtex.checkout-resources/Mutations'
+import {
+  savePaymentToken as SavePaymentTokenMutation,
+  saveCards as SaveCardsMutation,
+} from 'vtex.checkout-resources/Mutations'
 
+interface Address {
+  postalCode: string
+  street: string
+  neighborhood: string
+  city: string
+  state: string
+  country: string
+  number: string
+  complement: string
+}
+
+interface PaymentData {
+  paymentSystem: string
+  cardHolder: string
+  cardNumber: string
+  expiryDate: string
+  csc: string
+  document: string
+  documentType: string
+  partnerId: string
+  address: Address
+}
+interface PaymentToken {
+  creditCardToken: string
+  paymentSystem: string
+}
+
+interface Status {
+  error: boolean
+  value: PaymentToken[] | string
+}
 interface Context {
-  savePaymentData: (paymentData: any) => any
+  savePaymentData: (paymentData: PaymentData[]) => Promise<Status>
 }
 
 interface OrderPaymentProps {
@@ -20,7 +53,9 @@ export const OrderPaymentProvider = ({ children }: OrderPaymentProps) => {
   const [saveCardsMutation] = useMutation(SaveCardsMutation)
   const [savePaymentTokenMutation] = useMutation(SavePaymentTokenMutation)
 
-  const savePaymentData = async (paymentData: any) => {
+  const savePaymentData = async (
+    paymentData: PaymentData[]
+  ): Promise<Status> => {
     try {
       const {
         data: { saveCards },
@@ -39,11 +74,16 @@ export const OrderPaymentProvider = ({ children }: OrderPaymentProps) => {
         },
       })
 
-      return paymentTokens
+      return {
+        error: false,
+        value: paymentTokens,
+      }
     } catch (err) {
       refetch()
+
       return {
-        error: 'apiError',
+        error: true,
+        value: 'apiError',
       }
     }
   }
