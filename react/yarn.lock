@@ -4717,13 +4717,13 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-"vtex.checkout-resources@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.checkout-resources@0.18.0/public/@types/vtex.checkout-resources":
-  version "0.18.0"
-  resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.checkout-resources@0.18.0/public/@types/vtex.checkout-resources#d0fc5740eb90378abbe5180afd4f1756ec379f38"
+"vtex.checkout-resources@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.checkout-resources@0.19.0/public/@types/vtex.checkout-resources":
+  version "0.19.0"
+  resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.checkout-resources@0.19.0/public/@types/vtex.checkout-resources#e96474b8ef155d9fdc59d00a65a1fe9e661b7a53"
 
-"vtex.render-runtime@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.93.0/public/@types/vtex.render-runtime":
-  version "8.93.0"
-  resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.93.0/public/@types/vtex.render-runtime#db45939964edf7c8a3adf12580901c50ad1a0c24"
+"vtex.render-runtime@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.93.1/public/@types/vtex.render-runtime":
+  version "8.93.1"
+  resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.93.1/public/@types/vtex.render-runtime#b87ad35b37bf797d98367ca793fd1a0e44c09200"
 
 "vtex.styleguide@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.styleguide@9.112.3/public/@types/vtex.styleguide":
   version "9.112.3"

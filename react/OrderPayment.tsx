@@ -1,10 +1,8 @@
 import React, { createContext, ReactNode, useContext } from 'react'
 import { useQuery, useMutation } from 'react-apollo'
-import { cardSessionId as CardSessionIdQuery } from 'vtex.checkout-resources/Queries'
-import {
-  savePaymentToken as SavePaymentTokenMutation,
-  saveCards as SaveCardsMutation,
-} from 'vtex.checkout-resources/Mutations'
+import CardSessionIdQuery from 'vtex.checkout-resources/QueryCardSessionId'
+import SavePaymentTokenMutation from 'vtex.checkout-resources/MutationSavePaymentToken'
+import SaveCardsMutation from 'vtex.checkout-resources/MutationSaveCards'
 
 interface Address {
   postalCode: string
@@ -28,6 +26,16 @@ interface PaymentData {
   partnerId: string
   address: Address
 }
+
+interface TokenizedCard {
+  token: string
+  bin: string
+  lastDigits: string
+  expiresAt: string
+  paymentSystem: number
+  paymentSystemName: string
+}
+
 interface PaymentToken {
   creditCardToken: string
   paymentSystem: string
@@ -35,8 +43,9 @@ interface PaymentToken {
 
 interface Status {
   error: boolean
-  value: PaymentToken[] | string
+  value: TokenizedCard[] | string
 }
+
 interface Context {
   savePaymentData: (paymentData: PaymentData[]) => Promise<Status>
 }
@@ -44,6 +53,12 @@ interface Context {
 interface OrderPaymentProps {
   children: ReactNode
 }
+
+const getPaymentTokens = (tokenizedCards: TokenizedCard[]): PaymentToken[] =>
+  tokenizedCards.map(tokenizedCard => ({
+    creditCardToken: tokenizedCard.token,
+    paymentSystem: `${tokenizedCard.paymentSystem}`,
+  }))
 
 const OrderPaymentContext = createContext<Context | undefined>(undefined)
 
@@ -66,17 +81,17 @@ export const OrderPaymentProvider = ({ children }: OrderPaymentProps) => {
         },
       })
 
-      const { paymentTokens } = saveCards
+      const { tokenizedCards } = saveCards
 
       await savePaymentTokenMutation({
         variables: {
-          paymentTokens,
+          paymentTokens: getPaymentTokens(tokenizedCards),
         },
       })
 
       return {
         error: false,
-        value: paymentTokens,
+        value: tokenizedCards,
       }
     } catch (err) {
       refetch()
