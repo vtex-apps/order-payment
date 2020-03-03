@@ -1,4 +1,10 @@
-import React, { createContext, ReactNode, useContext } from 'react'
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useCallback,
+  useMemo,
+} from 'react'
 import { useQuery, useMutation } from 'react-apollo'
 import CardSessionIdQuery from 'vtex.checkout-resources/QueryCardSessionId'
 import SavePaymentTokenMutation from 'vtex.checkout-resources/MutationSavePaymentToken'
@@ -62,48 +68,61 @@ const getPaymentTokens = (tokenizedCards: TokenizedCard[]): PaymentToken[] =>
 
 const OrderPaymentContext = createContext<Context | undefined>(undefined)
 
-export const OrderPaymentProvider = ({ children }: OrderPaymentProps) => {
-  const { data: cardSessionData, refetch } = useQuery(CardSessionIdQuery)
+export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
+  children,
+}: OrderPaymentProps) => {
+  const { data: cardSession, refetch: refreshCardSession } = useQuery(
+    CardSessionIdQuery
+  )
 
   const [saveCardsMutation] = useMutation(SaveCardsMutation)
   const [savePaymentTokenMutation] = useMutation(SavePaymentTokenMutation)
 
-  const savePaymentData = async (
-    paymentData: PaymentData[]
-  ): Promise<Status> => {
-    try {
-      const {
-        data: { saveCards },
-      } = await saveCardsMutation({
-        variables: {
-          paymentData,
-          cardSessionId: cardSessionData.getCardSessionId,
-        },
-      })
+  const savePaymentData = useCallback(
+    async (paymentData: PaymentData[]): Promise<Status> => {
+      try {
+        const {
+          data: { saveCards },
+        } = await saveCardsMutation({
+          variables: {
+            paymentData,
+            cardSessionId: cardSession.getCardSessionId,
+          },
+        })
 
-      const { tokenizedCards } = saveCards
+        const { tokenizedCards } = saveCards
 
-      await savePaymentTokenMutation({
-        variables: {
-          paymentTokens: getPaymentTokens(tokenizedCards),
-        },
-      })
+        await savePaymentTokenMutation({
+          variables: {
+            paymentTokens: getPaymentTokens(tokenizedCards),
+          },
+        })
 
-      return {
-        error: false,
-        value: tokenizedCards,
+        return {
+          error: false,
+          value: tokenizedCards,
+        }
+      } catch (err) {
+        refreshCardSession()
+
+        return {
+          error: true,
+          value: 'apiError',
+        }
       }
-    } catch (err) {
-      refetch()
+    },
+    [
+      cardSession,
+      refreshCardSession,
+      saveCardsMutation,
+      savePaymentTokenMutation,
+    ]
+  )
 
-      return {
-        error: true,
-        value: 'apiError',
-      }
-    }
-  }
+  const value = useMemo(() => ({ savePaymentData }), [savePaymentData])
+
   return (
-    <OrderPaymentContext.Provider value={{ savePaymentData }}>
+    <OrderPaymentContext.Provider value={value}>
       {children}
     </OrderPaymentContext.Provider>
   )
