@@ -1,12 +1,11 @@
 {
   "vendor": "vtex",
-  "name": "base-store-component",
-  "version": "0.2.2",
-  "title": "IO Base Component",
-  "description": "IO Base component",
+  "name": "order-payment",
+  "version": "0.0.0",
+  "title": "Order Payment",
+  "description": "Order Payment component",
   "defaultLocale": "pt-BR",
   "builders": {
-    "messages": "1.x",
     "store": "0.x",
     "react": "3.x",
     "docs": "0.x"
@@ -16,7 +15,8 @@
     "postreleasy": "vtex publish --verbose"
   },
   "dependencies": {
-    "vtex.styleguide": "9.x"
+    "vtex.styleguide": "9.x",
+    "vtex.checkout-resources": "0.x"
   },
   "$schema": "https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema"
 }
