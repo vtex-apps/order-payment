@@ -9,6 +9,14 @@ import { useQuery, useMutation } from 'react-apollo'
 import CardSessionIdQuery from 'vtex.checkout-resources/QueryCardSessionId'
 import SavePaymentTokenMutation from 'vtex.checkout-resources/MutationSavePaymentToken'
 import SaveCardsMutation from 'vtex.checkout-resources/MutationSaveCards'
+import MutationUpdateOrderFormPayment from 'vtex.checkout-resources/MutationUpdateOrderFormPayment'
+import {
+  useOrderQueue,
+  useQueueStatus,
+  QueueStatus,
+} from 'vtex.order-manager/OrderQueue'
+import { useOrderForm } from 'vtex.order-manager/OrderForm'
+import { OrderForm, PaymentDataInput } from 'vtex.checkout-graphql'
 
 interface Address {
   postalCode: string
@@ -52,8 +60,18 @@ interface Status {
   value: TokenizedCard[] | string
 }
 
+interface UpdateOrderFormPaymentMutation {
+  updateOrderFormPayment: OrderForm
+}
+
+interface UpdateOrderFormPaymentMutationVariables {
+  paymentData: PaymentDataInput
+}
 interface Context {
   savePaymentData: (paymentData: PaymentData[]) => Promise<Status>
+  setOrderPayment: (
+    paymentData: PaymentDataInput
+  ) => Promise<{ success: boolean }>
 }
 
 interface OrderPaymentProps {
@@ -68,6 +86,8 @@ const getPaymentTokens = (tokenizedCards: TokenizedCard[]): PaymentToken[] =>
 
 const OrderPaymentContext = createContext<Context | undefined>(undefined)
 
+const SET_PAYMENT_TASK = 'SetPaymentTask'
+
 export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
   children,
 }: OrderPaymentProps) => {
@@ -77,6 +97,47 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
 
   const [saveCardsMutation] = useMutation(SaveCardsMutation)
   const [savePaymentTokenMutation] = useMutation(SavePaymentTokenMutation)
+
+  const { enqueue, listen } = useOrderQueue()
+  const { setOrderForm } = useOrderForm()
+
+  const queueStatusRef = useQueueStatus(listen)
+
+  const [updateOrderFormPayment] = useMutation<
+    UpdateOrderFormPaymentMutation,
+    UpdateOrderFormPaymentMutationVariables
+  >(MutationUpdateOrderFormPayment)
+
+  const setOrderPayment = useCallback(
+    async (paymentData: PaymentDataInput) => {
+      const task = async () => {
+        const { data } = await updateOrderFormPayment({
+          variables: { paymentData },
+        })
+
+        const orderForm = data!.updateOrderFormPayment
+
+        return orderForm
+      }
+
+      try {
+        const newOrderForm = await enqueue(task, SET_PAYMENT_TASK)
+
+        if (queueStatusRef.current === QueueStatus.FULFILLED) {
+          setOrderForm(newOrderForm)
+        }
+
+        return { success: true }
+      } catch (err) {
+        if (!err || err.code !== 'TASK_CANCELLED') {
+          throw err
+        }
+
+        return { success: false }
+      }
+    },
+    [enqueue, queueStatusRef, setOrderForm, updateOrderFormPayment]
+  )
 
   const savePaymentData = useCallback(
     async (paymentData: PaymentData[]): Promise<Status> => {
@@ -119,7 +180,10 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
     ]
   )
 
-  const value = useMemo(() => ({ savePaymentData }), [savePaymentData])
+  const value = useMemo(() => ({ savePaymentData, setOrderPayment }), [
+    savePaymentData,
+    setOrderPayment,
+  ])
 
   return (
     <OrderPaymentContext.Provider value={value}>

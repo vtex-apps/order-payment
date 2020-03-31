@@ -19,10 +19,11 @@
     "@types/react": "^16.9.2",
     "@vtex/test-tools": "^1.1.0",
     "apollo-client": "^2.5.1",
-    "typescript": "3.7.3",
-    "vtex.checkout-resources": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.checkout-resources@0.19.0/public/@types/vtex.checkout-resources",
-    "vtex.render-runtime": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.93.1/public/@types/vtex.render-runtime",
-    "vtex.styleguide": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.styleguide@9.112.3/public/@types/vtex.styleguide"
+    "typescript": "3.8.3",
+    "vtex.checkout-graphql": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.checkout-graphql@0.31.0/public/@types/vtex.checkout-graphql",
+    "vtex.checkout-resources": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.checkout-resources@0.27.0/public/@types/vtex.checkout-resources",
+    "vtex.order-manager": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.order-manager@0.8.4/public/@types/vtex.order-manager",
+    "vtex.render-runtime": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.98.1/public/@types/vtex.render-runtime"
   },
   "version": "0.1.0"
 }
