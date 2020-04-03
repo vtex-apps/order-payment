@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
-- `SetOrderPayment` mutation to update payment data
+- `setOrderPayment` mutation to update payment data
 
 ## [0.1.0] - 2020-03-05
 ### Added
