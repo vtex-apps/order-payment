@@ -4705,21 +4705,21 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-"vtex.checkout-graphql@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.checkout-graphql@0.31.0/public/@types/vtex.checkout-graphql":
-  version "0.31.0"
-  resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.checkout-graphql@0.31.0/public/@types/vtex.checkout-graphql#3572f73340f05345f6e13cfd5445455ba32ee94c"
+"vtex.checkout-graphql@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.checkout-graphql@0.33.2/public/@types/vtex.checkout-graphql":
+  version "0.33.2"
+  resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.checkout-graphql@0.33.2/public/@types/vtex.checkout-graphql#1eef684589278f080036595bb95a356cbce98b02"
 
-"vtex.checkout-resources@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.checkout-resources@0.27.0/public/@types/vtex.checkout-resources":
-  version "0.27.0"
-  resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.checkout-resources@0.27.0/public/@types/vtex.checkout-resources#3dd63269b39fd7580d11b56a27adf8c666df7a97"
+"vtex.checkout-resources@https://paymentio--checkoutio.myvtex.com/_v/private/typings/linked/v1/vtex.checkout-resources@0.28.0+build1588019452/public/@types/vtex.checkout-resources":
+  version "0.28.0"
+  resolved "https://paymentio--checkoutio.myvtex.com/_v/private/typings/linked/v1/vtex.checkout-resources@0.28.0+build1588019452/public/@types/vtex.checkout-resources#7ec1800c636dc1cd8b07317d1e713786bdf6859b"
 
 "vtex.order-manager@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.order-manager@0.8.4/public/@types/vtex.order-manager":
   version "0.8.4"
   resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.order-manager@0.8.4/public/@types/vtex.order-manager#3a4761c73364853954dd61a61d1d01260cbbf634"
 
-"vtex.render-runtime@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.98.1/public/@types/vtex.render-runtime":
-  version "8.98.1"
-  resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.98.1/public/@types/vtex.render-runtime#cb50ca11478f06b1895b328688299196da69b0fa"
+"vtex.render-runtime@http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.100.1/public/@types/vtex.render-runtime":
+  version "8.100.1"
+  resolved "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.100.1/public/@types/vtex.render-runtime#7f972f369c3db71d406d49b1d91be461f177103f"
 
 w3c-hr-time@^1.0.1:
   version "1.0.1"
