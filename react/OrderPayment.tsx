@@ -4,86 +4,55 @@ import React, {
   useContext,
   useCallback,
   useMemo,
+  useState,
 } from 'react'
-import { useQuery, useMutation } from 'react-apollo'
-import CardSessionIdQuery from 'vtex.checkout-resources/QueryCardSessionId'
-import SavePaymentTokenMutation from 'vtex.checkout-resources/MutationSavePaymentToken'
-import SaveCardsMutation from 'vtex.checkout-resources/MutationSaveCards'
+import { useMutation } from 'react-apollo'
 import MutationUpdateOrderFormPayment from 'vtex.checkout-resources/MutationUpdateOrderFormPayment'
+import { OrderQueue, OrderForm } from 'vtex.order-manager'
 import {
-  useOrderQueue,
-  useQueueStatus,
-  QueueStatus,
-} from 'vtex.order-manager/OrderQueue'
-import { useOrderForm } from 'vtex.order-manager/OrderForm'
-import { OrderForm, PaymentDataInput } from 'vtex.checkout-graphql'
+  OrderForm as CheckoutOrderForm,
+  PaymentDataInput,
+  PaymentSystem,
+  InstallmentOption,
+  AvailableAccount,
+  Payment,
+} from 'vtex.checkout-graphql'
 
-interface Address {
-  postalCode: string
-  street: string
-  neighborhood: string
-  city: string
-  state: string
-  country: string
-  number: string
-  complement: string
-}
-
-interface PaymentData {
-  paymentSystem: string
-  cardHolder: string
-  cardNumber: string
-  expiryDate: string
-  csc: string
-  document: string
-  documentType: string
-  partnerId: string
-  address: Address
-}
-
-interface TokenizedCard {
-  token: string
-  bin: string
-  lastDigits: string
-  expiresAt: string
-  paymentSystem: number
-  paymentSystemName: string
-}
-
-interface PaymentToken {
-  creditCardToken: string
-  paymentSystem: string
-}
-
-interface Status {
-  error: boolean
-  value: TokenizedCard[] | string
-}
+const { useOrderForm } = OrderForm
+const { useOrderQueue, useQueueStatus, QueueStatus } = OrderQueue
 
 interface UpdateOrderFormPaymentMutation {
-  updateOrderFormPayment: OrderForm
+  updateOrderFormPayment: CheckoutOrderForm
 }
 
 interface UpdateOrderFormPaymentMutationVariables {
   paymentData: PaymentDataInput
 }
 
+interface CardFormData {
+  encryptedCardNumber: string
+  encryptedCardHolder: string
+  encryptedExpiryDate: string
+  encryptedCsc: string
+  lastDigits: string
+}
+
 interface Context {
-  savePaymentData: (paymentData: PaymentData[]) => Promise<Status>
   setOrderPayment: (
     paymentData: PaymentDataInput
   ) => Promise<{ success: boolean }>
+  cardFormData: CardFormData | null
+  setCardFormData: React.Dispatch<React.SetStateAction<CardFormData | null>>
+  paymentSystems: PaymentSystem[]
+  availableAccounts: AvailableAccount[]
+  installmentOptions: InstallmentOption[]
+  payment: Payment
+  referenceValue: number
 }
 
 interface OrderPaymentProps {
   children: ReactNode
 }
-
-const getPaymentTokens = (tokenizedCards: TokenizedCard[]): PaymentToken[] =>
-  tokenizedCards.map(tokenizedCard => ({
-    creditCardToken: tokenizedCard.token,
-    paymentSystem: `${tokenizedCard.paymentSystem}`,
-  }))
 
 const OrderPaymentContext = createContext<Context | undefined>(undefined)
 
@@ -92,15 +61,22 @@ const SET_PAYMENT_TASK = 'SetPaymentTask'
 export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
   children,
 }: OrderPaymentProps) => {
-  const { data: cardSession, refetch: refreshCardSession } = useQuery(
-    CardSessionIdQuery
-  )
-
-  const [saveCardsMutation] = useMutation(SaveCardsMutation)
-  const [savePaymentTokenMutation] = useMutation(SavePaymentTokenMutation)
-
   const { enqueue, listen } = useOrderQueue()
-  const { setOrderForm } = useOrderForm()
+  const { orderForm, setOrderForm } = useOrderForm()
+
+  const {
+    totalizers,
+    paymentData: {
+      paymentSystems,
+      availableAccounts,
+      installmentOptions,
+      payments,
+    },
+  } = orderForm
+  const referenceValue = totalizers[0]!.value
+  const payment = payments[0] || {}
+
+  const [cardFormData, setCardFormData] = useState<CardFormData | null>(null)
 
   const queueStatusRef = useQueueStatus(listen)
 
@@ -116,9 +92,9 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
           variables: { paymentData },
         })
 
-        const orderForm = data!.updateOrderFormPayment
+        const newOrderForm = data!.updateOrderFormPayment
 
-        return orderForm
+        return newOrderForm
       }
 
       try {
@@ -140,51 +116,27 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
     [enqueue, queueStatusRef, setOrderForm, updateOrderFormPayment]
   )
 
-  const savePaymentData = useCallback(
-    async (paymentData: PaymentData[]): Promise<Status> => {
-      try {
-        const {
-          data: { saveCards },
-        } = await saveCardsMutation({
-          variables: {
-            paymentData,
-            cardSessionId: cardSession.getCardSessionId,
-          },
-        })
-
-        const { tokenizedCards } = saveCards
-
-        await savePaymentTokenMutation({
-          variables: {
-            paymentTokens: getPaymentTokens(tokenizedCards),
-          },
-        })
-
-        return {
-          error: false,
-          value: tokenizedCards,
-        }
-      } catch (err) {
-        refreshCardSession()
-
-        return {
-          error: true,
-          value: 'apiError',
-        }
-      }
-    },
+  const value = useMemo(
+    () => ({
+      setOrderPayment,
+      cardFormData,
+      setCardFormData,
+      paymentSystems,
+      installmentOptions,
+      availableAccounts,
+      payment,
+      referenceValue,
+    }),
     [
-      cardSession,
-      refreshCardSession,
-      saveCardsMutation,
-      savePaymentTokenMutation,
+      availableAccounts,
+      cardFormData,
+      installmentOptions,
+      payment,
+      paymentSystems,
+      referenceValue,
+      setOrderPayment,
     ]
   )
-
-  const value = useMemo(() => ({ savePaymentData, setOrderPayment }), [
-    savePaymentData,
-    setOrderPayment,
-  ])
 
   return (
     <OrderPaymentContext.Provider value={value}>
