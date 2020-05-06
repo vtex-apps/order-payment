@@ -16,6 +16,7 @@ import {
   InstallmentOption,
   AvailableAccount,
   Payment,
+  PaymentInput,
 } from 'vtex.checkout-graphql'
 
 const { useOrderForm } = OrderForm
@@ -38,8 +39,8 @@ interface CardFormData {
 }
 
 interface Context {
-  setOrderPayment: (
-    paymentData: PaymentDataInput
+  setPaymentField: (
+    paymentField: Partial<PaymentInput>
   ) => Promise<{ success: boolean }>
   cardFormData: CardFormData | null
   setCardFormData: React.Dispatch<React.SetStateAction<CardFormData | null>>
@@ -116,9 +117,22 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
     [enqueue, queueStatusRef, setOrderForm, updateOrderFormPayment]
   )
 
+  const setPaymentField = useCallback(
+    async (paymentField: Partial<PaymentInput>) => {
+      const newPayment = {
+        ...payment,
+        ...paymentField,
+      }
+      return setOrderPayment({
+        payments: [newPayment],
+      })
+    },
+    [payment, setOrderPayment]
+  )
+
   const value = useMemo(
     () => ({
-      setOrderPayment,
+      setPaymentField,
       cardFormData,
       setCardFormData,
       paymentSystems,
@@ -134,7 +148,7 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
       payment,
       paymentSystems,
       referenceValue,
-      setOrderPayment,
+      setPaymentField,
     ]
   )
 
