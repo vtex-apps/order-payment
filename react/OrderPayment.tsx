@@ -118,7 +118,7 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
   )
 
   const setPaymentField = useCallback(
-    async (paymentField: Partial<PaymentInput>) => {
+    (paymentField: Partial<PaymentInput>) => {
       const newPayment = {
         ...payment,
         ...paymentField,
