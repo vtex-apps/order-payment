@@ -25,5 +25,5 @@
     "vtex.order-manager": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.order-manager@0.8.4/public/@types/vtex.order-manager",
     "vtex.render-runtime": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.100.3/public/@types/vtex.render-runtime"
   },
-  "version": "0.2.0"
+  "version": "0.3.0"
 }

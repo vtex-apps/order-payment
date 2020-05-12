@@ -1,7 +1,7 @@
 {
   "vendor": "vtex",
   "name": "order-payment",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "title": "Order Payment",
   "description": "Order Payment component",
   "defaultLocale": "pt-BR",
