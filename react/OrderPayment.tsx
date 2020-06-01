@@ -4,7 +4,6 @@ import React, {
   useContext,
   useCallback,
   useMemo,
-  useState,
 } from 'react'
 import { useMutation } from 'react-apollo'
 import MutationUpdateOrderFormPayment from 'vtex.checkout-resources/MutationUpdateOrderFormPayment'
@@ -30,20 +29,10 @@ interface UpdateOrderFormPaymentMutationVariables {
   paymentData: PaymentDataInput
 }
 
-interface CardFormData {
-  encryptedCardNumber: string
-  encryptedCardHolder: string
-  encryptedExpiryDate: string
-  encryptedCsc: string
-  lastDigits: string
-}
-
 interface Context {
   setPaymentField: (
     paymentField: Partial<PaymentInput>
   ) => Promise<{ success: boolean }>
-  cardFormData: CardFormData | null
-  setCardFormData: React.Dispatch<React.SetStateAction<CardFormData | null>>
   paymentSystems: PaymentSystem[]
   availableAccounts: AvailableAccount[]
   installmentOptions: InstallmentOption[]
@@ -74,10 +63,9 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
       payments,
     },
   } = orderForm
-  const referenceValue = totalizers[0]!.value
-  const payment = payments[0] || {}
 
-  const [cardFormData, setCardFormData] = useState<CardFormData | null>(null)
+  const referenceValue = totalizers[0]?.value ?? 0
+  const payment = payments[0] || {}
 
   const queueStatusRef = useQueueStatus(listen)
 
@@ -133,8 +121,6 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
   const value = useMemo(
     () => ({
       setPaymentField,
-      cardFormData,
-      setCardFormData,
       paymentSystems,
       installmentOptions,
       availableAccounts,
@@ -143,7 +129,6 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
     }),
     [
       availableAccounts,
-      cardFormData,
       installmentOptions,
       payment,
       paymentSystems,
