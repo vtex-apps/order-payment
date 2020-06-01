@@ -4,6 +4,7 @@ import React, {
   useContext,
   useCallback,
   useMemo,
+  useState,
 } from 'react'
 import { useMutation } from 'react-apollo'
 import MutationUpdateOrderFormPayment from 'vtex.checkout-resources/MutationUpdateOrderFormPayment'
@@ -38,6 +39,8 @@ interface Context {
   installmentOptions: InstallmentOption[]
   payment: Payment
   referenceValue: number
+  cardLastDigits: string
+  setCardLastDigits: (cardDigits: string) => void
 }
 
 interface OrderPaymentProps {
@@ -53,6 +56,7 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
 }: OrderPaymentProps) => {
   const { enqueue, listen } = useOrderQueue()
   const { orderForm, setOrderForm } = useOrderForm()
+  const [cardLastDigits, setCardLastDigits] = useState('')
 
   const {
     totalizers,
@@ -126,6 +130,8 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
       availableAccounts,
       payment,
       referenceValue,
+      cardLastDigits,
+      setCardLastDigits,
     }),
     [
       availableAccounts,
@@ -134,6 +140,7 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
       paymentSystems,
       referenceValue,
       setPaymentField,
+      cardLastDigits,
     ]
   )
 
