@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Removed
-- Method `setCardFormData` and `cardFormData` from payment context.
+- `setCardFormData` and `cardFormData` from payment context.
 
 ## [0.3.0] - 2020-05-12
 ### Added
