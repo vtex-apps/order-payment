@@ -39,6 +39,8 @@ interface Context {
   installmentOptions: InstallmentOption[]
   payment: Payment
   referenceValue: number
+  value: number
+  interestValue: number
   cardLastDigits: string
   setCardLastDigits: (cardDigits: string) => void
 }
@@ -68,7 +70,26 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
     },
   } = orderForm
 
-  const referenceValue = totalizers[0]?.value ?? 0
+  const referenceValue =
+    totalizers?.reduce((total, totalizer) => {
+      if (totalizer?.id === 'Tax' || totalizer?.id === 'interest') {
+        return total
+      }
+
+      return total + (totalizer?.value ?? 0)
+    }, 0) ?? 0
+
+  const value = payments.reduce(
+    (total, payment) => total + (payment?.value ?? 0),
+    0
+  )
+
+  const interestValue = payments.reduce(
+    (total, payment) =>
+      total + ((payment?.value ?? 0) - (payment?.referenceValue ?? 0)),
+    0
+  )
+
   const payment = payments[0] || {}
 
   const queueStatusRef = useQueueStatus(listen)
@@ -122,30 +143,34 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
     [payment, setOrderPayment]
   )
 
-  const value = useMemo(
+  const contextValue = useMemo(
     () => ({
       setPaymentField,
       paymentSystems,
       installmentOptions,
       availableAccounts,
       payment,
+      value,
+      interestValue,
       referenceValue,
       cardLastDigits,
       setCardLastDigits,
     }),
     [
-      availableAccounts,
-      installmentOptions,
-      payment,
-      paymentSystems,
-      referenceValue,
       setPaymentField,
+      paymentSystems,
+      installmentOptions,
+      availableAccounts,
+      payment,
+      value,
+      interestValue,
+      referenceValue,
       cardLastDigits,
     ]
   )
 
   return (
-    <OrderPaymentContext.Provider value={value}>
+    <OrderPaymentContext.Provider value={contextValue}>
       {children}
     </OrderPaymentContext.Provider>
   )
