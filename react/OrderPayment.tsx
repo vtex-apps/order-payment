@@ -43,6 +43,8 @@ interface Context {
   interestValue: number
   cardLastDigits: string
   setCardLastDigits: (cardDigits: string) => void
+  paymentsValid: boolean
+  setCardFormFilled: (filled: boolean) => void
 }
 
 interface OrderPaymentProps {
@@ -59,6 +61,7 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
   const { enqueue, listen } = useOrderQueue()
   const { orderForm, setOrderForm } = useOrderForm()
   const [cardLastDigits, setCardLastDigits] = useState('')
+  const [cardFormFilled, setCardFormFilled] = useState(false)
 
   const {
     totalizers,
@@ -79,18 +82,38 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
       return total + (totalizer?.value ?? 0)
     }, 0) ?? 0
 
-  const value = payments.reduce(
-    (total, payment) => total + (payment?.value ?? 0),
-    0
-  )
+  const value =
+    payments?.reduce((total, payment) => total + (payment?.value ?? 0), 0) ?? 0
 
-  const interestValue = payments.reduce(
-    (total, payment) =>
-      total + ((payment?.value ?? 0) - (payment?.referenceValue ?? 0)),
-    0
-  )
+  const interestValue =
+    payments?.reduce(
+      (total, payment) =>
+        total + ((payment?.value ?? 0) - (payment?.referenceValue ?? 0)),
+      0
+    ) ?? 0
 
-  const payment = payments[0] || {}
+  const payment = payments?.[0] ?? {}
+
+  const paymentsValid = useMemo(() => {
+    if (!payments?.length) {
+      return false
+    }
+
+    if (
+      payments
+        .map(p => p.paymentSystem)
+        .map(paymentSystem =>
+          paymentSystems.find(ps => ps.id === paymentSystem)
+        )
+        .some(
+          paymentSystem => paymentSystem?.groupName === 'creditCardPaymentGroup'
+        )
+    ) {
+      return cardFormFilled && payments.every(p => p.installments != null)
+    }
+
+    return true
+  }, [cardFormFilled, paymentSystems, payments])
 
   const queueStatusRef = useQueueStatus(listen)
 
@@ -155,6 +178,8 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
       referenceValue,
       cardLastDigits,
       setCardLastDigits,
+      paymentsValid,
+      setCardFormFilled,
     }),
     [
       setPaymentField,
@@ -166,6 +191,7 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
       interestValue,
       referenceValue,
       cardLastDigits,
+      paymentsValid,
     ]
   )
 
