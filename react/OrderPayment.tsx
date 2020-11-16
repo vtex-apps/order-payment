@@ -46,6 +46,7 @@ interface Context {
   paymentsValid: boolean
   setCardFormFilled: (filled: boolean) => void
   isFreePurchase: boolean
+  lastStepsValid: boolean
 }
 
 interface OrderPaymentProps {
@@ -96,9 +97,12 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
   const payment = payments?.[0] ?? {}
 
   const isFreePurchase = !referenceValue && orderForm.items.length > 0
+  const hasValidProfileData = orderForm.clientProfileData?.isValid ?? false
+  const hasValidShippingData = orderForm.shipping.isValid
+
+  const lastStepsValid = hasValidProfileData && hasValidShippingData
 
   const paymentsValid = useMemo(() => {
-
     if (isFreePurchase) {
       return true
     }
@@ -121,7 +125,7 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
     }
 
     return true
-  }, [cardFormFilled, paymentSystems, payments])
+  }, [cardFormFilled, isFreePurchase, paymentSystems, payments])
 
   const queueStatusRef = useQueueStatus(listen)
 
@@ -188,7 +192,8 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
       setCardLastDigits,
       paymentsValid,
       setCardFormFilled,
-      isFreePurchase
+      isFreePurchase,
+      lastStepsValid,
     }),
     [
       setPaymentField,
@@ -201,7 +206,8 @@ export const OrderPaymentProvider: React.FC<OrderPaymentProps> = ({
       referenceValue,
       cardLastDigits,
       paymentsValid,
-      isFreePurchase
+      isFreePurchase,
+      lastStepsValid,
     ]
   )
 
