@@ -5,11 +5,6 @@ import MutationUpdateOrderFormPayment from 'vtex.checkout-resources/MutationUpda
 import {
   OrderForm as CheckoutOrderForm,
   PaymentDataInput,
-  PaymentSystem,
-  InstallmentOption,
-  AvailableAccount,
-  Payment,
-  PaymentInput,
 } from 'vtex.checkout-graphql'
 
 import {
@@ -27,7 +22,7 @@ interface UpdateOrderFormPaymentMutationVariables {
 }
 
 const { useOrderForm } = OrderForm
-const { useOrderQueue, useQueueStatus, QueueStatus } = OrderQueue
+const { useOrderQueue, useQueueStatus } = OrderQueue
 
 function useUpdateOrderFormPayment() {
   const [updateOrderFormPayment] = useMutation<
@@ -37,10 +32,11 @@ function useUpdateOrderFormPayment() {
 
   return {
     updateOrderFormPayment: useCallback(
-      async (paymentData: PaymentDataInput, orderFormId: string) => {
+      async (paymentData: PaymentDataInput) => {
         const { data } = await updateOrderFormPayment({
           variables: { paymentData },
         })
+
         const newOrderForm = data!.updateOrderFormPayment
 
         return newOrderForm
@@ -58,6 +54,7 @@ export function useLogger() {
     workflowType,
     workflowInstance,
   }) => {
+    // eslint-disable-next-line no-console
     console.log({ type, level, event, workflowType, workflowInstance })
   }
   return { log }

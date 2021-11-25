@@ -7,9 +7,9 @@ import React, {
   useMemo,
 } from 'react'
 import {
-  useQueueStatus as useQueueStatusRaw,
-  useOrderForm as useOrderFormRaw,
-  useOrderQueue as useOrderQueueRaw,
+  OrderFormContext,
+  OrderForm,
+  OrderQueueContext,
 } from '@vtex/order-manager'
 
 import {
@@ -43,16 +43,16 @@ export type UseLogger = () => { log: LogFn }
 type UseUpdateOrderFormPayment = () => {
   updateOrderFormPayment: (
     paymentData: PaymentDataInput,
-    orderFormId: string
+    orderFormId?: string
   ) => Promise<CheckoutOrderForm>
 }
 
-interface CreateOrderPaymentProvider {
+interface CreateOrderPaymentProvider<O extends OrderForm> {
   useLogger: UseLogger
-  useOrderQueue: typeof useOrderQueueRaw
-  useOrderForm: typeof useOrderFormRaw
+  useOrderQueue: () => OrderQueueContext<O>
+  useOrderForm: () => OrderFormContext<O>
   useUpdateOrderFormPayment: UseUpdateOrderFormPayment
-  useQueueStatus: typeof useQueueStatusRaw
+  useQueueStatus: (listen: OrderQueueContext<O>['listen']) => any
 }
 
 interface Context {
@@ -82,10 +82,10 @@ export function createOrderPaymentProvider({
   useOrderForm,
   useUpdateOrderFormPayment,
   useQueueStatus,
-}: CreateOrderPaymentProvider) {
+}: CreateOrderPaymentProvider<CheckoutOrderForm>) {
   const OrderPaymentProvider: FC = ({ children }) => {
     const { enqueue, listen } = useOrderQueue()
-    const { orderForm, setOrderForm } = useOrderForm<CheckoutOrderForm>()
+    const { orderForm, setOrderForm } = useOrderForm()
     const [cardLastDigits, setCardLastDigits] = useState('')
     const [cardFormFilled, setCardFormFilled] = useState(false)
     const queueStatusRef = useQueueStatus(listen)
@@ -141,15 +141,18 @@ export function createOrderPaymentProvider({
       if (
         payments
           .map((p: Payment) => p.paymentSystem)
-          .map(paymentSystem =>
+          .map((paymentSystem?: string | null) =>
             paymentSystems.find((ps: PaymentSystem) => ps.id === paymentSystem)
           )
           .some(
-            paymentSystem =>
+            (paymentSystem?: PaymentSystem) =>
               paymentSystem?.groupName === 'creditCardPaymentGroup'
           )
       ) {
-        return cardFormFilled && payments.every(p => p.installments != null)
+        return (
+          cardFormFilled &&
+          payments.every((p: Payment) => p.installments != null)
+        )
       }
 
       return true
