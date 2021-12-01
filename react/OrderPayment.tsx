@@ -1,6 +1,6 @@
 import {
   OrderPaymentProvider,
   useOrderPayment,
-} from './components/OrderPayments'
+} from './components/OrderPayment'
 
 export default { useOrderPayment, OrderPaymentProvider }
