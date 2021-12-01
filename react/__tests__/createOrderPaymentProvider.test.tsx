@@ -16,17 +16,6 @@ import {
   useOrderPayment,
 } from '../components/createOrderPaymentProvider'
 
-// const mockQuery = {
-//   request: {
-//     query: QueryOrderForm,
-//   },
-//   result: {
-//     data: {
-//       orderForm: mockOrderForm,
-//     },
-//   },
-// }
-
 const createWrapperOrderProviders = () => {
   function useUpdateOrderFormPayment() {
     return {

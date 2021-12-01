@@ -57,6 +57,7 @@ export function useLogger() {
     // eslint-disable-next-line no-console
     console.log({ type, level, event, workflowType, workflowInstance })
   }
+
   return { log }
 }
 
