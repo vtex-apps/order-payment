@@ -11,22 +11,21 @@ import {
   OrderFormProvider,
   QueryOrderForm,
 } from '../__fixtures__/OrderFormProvider'
-import { mockOrderForm } from '../__fixtures__/orderForm'
 import {
   createOrderPaymentProvider,
   useOrderPayment,
 } from '../components/createOrderPaymentProvider'
 
-const mockQuery = {
-  request: {
-    query: QueryOrderForm,
-  },
-  result: {
-    data: {
-      orderForm: mockOrderForm,
-    },
-  },
-}
+// const mockQuery = {
+//   request: {
+//     query: QueryOrderForm,
+//   },
+//   result: {
+//     data: {
+//       orderForm: mockOrderForm,
+//     },
+//   },
+// }
 
 const createWrapperOrderProviders = () => {
   function useUpdateOrderFormPayment() {
@@ -48,6 +47,7 @@ const createWrapperOrderProviders = () => {
       // eslint-disable-next-line no-console
       console.log({ type, level, event, workflowType, workflowInstance })
     }
+
     return { log }
   }
 
@@ -73,13 +73,24 @@ const createWrapperOrderProviders = () => {
 }
 
 describe('OrderPayment', () => {
+  it('should throw an error if theres no OrderPaymentProvider on the tree', () => {
+    const {
+      result: { error },
+    } = renderHook(() => useOrderPayment())
+
+    expect(error).not.toBeNull()
+    expect(error.message).toEqual(
+      'useOrderPayment must be used within a OrderPaymentProvider'
+    )
+  })
+
   it('should render hook!', () => {
     const { Wrapper } = createWrapperOrderProviders()
     const wrapper = ({ children }) => <Wrapper>{children}</Wrapper>
 
     const { result } = renderHook(() => useOrderPayment(), { wrapper })
 
-    // console.log(result.current)
+    // console.log(result.error)
     expect(result).not.toBeNull()
   })
 })
