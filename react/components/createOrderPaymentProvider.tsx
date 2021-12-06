@@ -22,6 +22,7 @@ import {
   PaymentInput,
   Totalizer,
 } from '../typings'
+import { UseLogger } from './utils/logger'
 
 interface LogParams {
   type: 'Error'
@@ -35,10 +36,6 @@ export const QueueStatus = {
   PENDING: 'Pending',
   FULFILLED: 'Fulfilled',
 } as const
-
-export type LogFn = (params: LogParams) => void
-
-export type UseLogger = () => { log: LogFn }
 
 type UseUpdateOrderFormPayment = () => {
   updateOrderFormPayment: (

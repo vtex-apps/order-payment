@@ -10,8 +10,8 @@ import {
 import {
   createOrderPaymentProvider,
   useOrderPayment,
-  LogFn,
 } from './createOrderPaymentProvider'
+import { useLogger } from './utils/logger'
 
 interface UpdateOrderFormPaymentMutation {
   updateOrderFormPayment: CheckoutOrderForm
@@ -44,21 +44,6 @@ function useUpdateOrderFormPayment() {
       [updateOrderFormPayment]
     ),
   }
-}
-
-export function useLogger() {
-  const log: LogFn = ({
-    type,
-    level,
-    event,
-    workflowType,
-    workflowInstance,
-  }) => {
-    // eslint-disable-next-line no-console
-    console.log({ type, level, event, workflowType, workflowInstance })
-  }
-
-  return { log }
 }
 
 const { OrderPaymentProvider } = createOrderPaymentProvider({

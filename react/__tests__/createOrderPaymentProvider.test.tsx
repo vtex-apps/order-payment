@@ -8,14 +8,12 @@ import {
 } from '@vtex/order-manager'
 
 import { mockOrderForm } from '../__fixtures__/orderForm'
-import {
-  OrderFormProvider,
-  QueryOrderForm,
-} from '../__fixtures__/OrderFormProvider'
+import { OrderFormProvider } from '../__fixtures__/OrderFormProvider'
 import {
   createOrderPaymentProvider,
   useOrderPayment,
 } from '../components/createOrderPaymentProvider'
+import { useLogger } from '../components/utils/logger'
 
 const mockCashPayment = {
   payments: [
@@ -39,21 +37,6 @@ const createWrapperOrderProviders = () => {
     return {
       updateOrderFormPayment: mockUseUpdateOrderFormPayment,
     }
-  }
-
-  function useLogger() {
-    const log = ({
-      type,
-      level,
-      event,
-      workflowType,
-      workflowInstance,
-    }: Record<string, string>) => {
-      // eslint-disable-next-line no-console
-      console.log({ type, level, event, workflowType, workflowInstance })
-    }
-
-    return { log }
   }
 
   const { OrderPaymentProvider } = createOrderPaymentProvider({

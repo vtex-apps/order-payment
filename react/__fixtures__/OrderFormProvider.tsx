@@ -1,25 +1,6 @@
-import { useQuery } from 'react-apollo'
-import gql from 'graphql-tag'
 import { createOrderFormProvider } from '@vtex/order-manager'
 
 import { mockOrderForm } from './orderForm'
-// import QueryOrderForm from './QueryOrderForm'
-
-export const QueryOrderForm = gql`
-  query MockQuery {
-    orderForm {
-      id
-      items
-      canEditData
-      clientProfileData {
-        email
-        firstName
-        lastName
-      }
-      value
-    }
-  }
-`
 
 function useToast() {
   return {
