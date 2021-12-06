@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, act } from '@testing-library/react-hooks'
 import {
   useOrderForm,
   useOrderQueue,
@@ -7,6 +7,7 @@ import {
   OrderQueueProvider,
 } from '@vtex/order-manager'
 
+import { mockOrderForm } from '../__fixtures__/orderForm'
 import {
   OrderFormProvider,
   QueryOrderForm,
@@ -16,12 +17,27 @@ import {
   useOrderPayment,
 } from '../components/createOrderPaymentProvider'
 
+const mockCashPayment = {
+  payments: [
+    {
+      paymentSystem: '201',
+      bin: null,
+      accountId: null,
+      tokenId: null,
+      installments: 1,
+      referenceValue: 230500,
+      value: 230500,
+
+      installmentsInterestRate: 0,
+    },
+  ],
+}
+
+const mockUseUpdateOrderFormPayment = jest.fn().mockResolvedValue(true)
 const createWrapperOrderProviders = () => {
   function useUpdateOrderFormPayment() {
     return {
-      updateOrderFormPayment: new Promise(resolve => {
-        resolve(true)
-      }),
+      updateOrderFormPayment: mockUseUpdateOrderFormPayment,
     }
   }
 
@@ -71,15 +87,31 @@ describe('OrderPayment', () => {
     expect(error.message).toEqual(
       'useOrderPayment must be used within a OrderPaymentProvider'
     )
+    expect(mockUseUpdateOrderFormPayment).not.toHaveBeenCalled()
   })
 
-  it('should render hook!', () => {
+  it('should get payment data from the current orderForm', () => {
     const { Wrapper } = createWrapperOrderProviders()
-    const wrapper = ({ children }) => <Wrapper>{children}</Wrapper>
 
-    const { result } = renderHook(() => useOrderPayment(), { wrapper })
+    const { result } = renderHook(() => useOrderPayment(), { wrapper: Wrapper })
+    const { current } = result
 
-    // console.log(result.error)
-    expect(result).not.toBeNull()
+    expect(current).not.toBeNull()
+    expect(current.referenceValue).toEqual(mockOrderForm.value)
+    expect(mockUseUpdateOrderFormPayment).not.toHaveBeenCalled()
+  })
+
+  it('should call function to update orderForm on the server if the payment data is updated', async () => {
+    const { Wrapper } = createWrapperOrderProviders()
+
+    const { result } = renderHook(() => useOrderPayment(), { wrapper: Wrapper })
+    const { current } = result
+
+    await act(async () => {
+      const success = await current.setPaymentField(mockCashPayment.payments[0])
+
+      expect(success).toBeTruthy()
+    })
+    expect(mockUseUpdateOrderFormPayment).toHaveBeenCalled()
   })
 })
