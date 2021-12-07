@@ -6,12 +6,9 @@ import React, {
   useState,
   useMemo,
 } from 'react'
-import {
-  OrderFormContext,
-  OrderForm,
-  OrderQueueContext,
-} from '@vtex/order-manager'
+import { OrderFormContext, OrderQueueContext } from '@vtex/order-manager'
 
+import { UseLogger } from './utils/logger'
 import {
   OrderForm as CheckoutOrderForm,
   PaymentDataInput,
@@ -22,15 +19,6 @@ import {
   PaymentInput,
   Totalizer,
 } from '../typings'
-import { UseLogger } from './utils/logger'
-
-interface LogParams {
-  type: 'Error'
-  level: 'Critical'
-  event: unknown
-  workflowType: 'OrderItems'
-  workflowInstance: string
-}
 
 export const QueueStatus = {
   PENDING: 'Pending',
@@ -44,7 +32,7 @@ type UseUpdateOrderFormPayment = () => {
   ) => Promise<CheckoutOrderForm>
 }
 
-interface CreateOrderPaymentProvider<O extends OrderForm> {
+interface CreateOrderPaymentProvider<O extends CheckoutOrderForm> {
   useLogger: UseLogger
   useOrderQueue: () => OrderQueueContext<O>
   useOrderForm: () => OrderFormContext<O>
@@ -157,13 +145,13 @@ export function createOrderPaymentProvider({
 
     const setOrderPayment = useCallback(
       async (paymentData: PaymentDataInput) => {
-        const task = async () => {
-          const newOrderForm = await updateOrderFormPayment(paymentData, id)
-
-          return newOrderForm
-        }
-
         try {
+          const task = async () => {
+            const newOrderForm = await updateOrderFormPayment(paymentData, id)
+
+            return newOrderForm
+          }
+
           const newOrderForm = await enqueue(task, SET_PAYMENT_TASK)
 
           if (queueStatusRef.current === QueueStatus.FULFILLED) {
@@ -183,17 +171,32 @@ export function createOrderPaymentProvider({
     )
 
     const setPaymentField = useCallback(
-      (paymentField: Partial<PaymentInput>) => {
+      async (paymentField: Partial<PaymentInput>) => {
         const newPayment = {
           ...payment,
           ...paymentField,
         }
 
-        return setOrderPayment({
+        const paymentStatusUpdated = await setOrderPayment({
           payments: [newPayment],
         })
+
+        if (!paymentStatusUpdated.success) {
+          log({
+            type: 'Error',
+            level: 'Critical',
+            event: {
+              paymentField,
+              success: paymentStatusUpdated.success,
+              orderFormId: id,
+            },
+            workflowInstance: 'payment-field-not-updated',
+          })
+        }
+
+        return paymentStatusUpdated
       },
-      [payment, setOrderPayment]
+      [payment, setOrderPayment, log, id]
     )
 
     const contextValue = useMemo(

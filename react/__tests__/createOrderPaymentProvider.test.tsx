@@ -13,7 +13,7 @@ import {
   createOrderPaymentProvider,
   useOrderPayment,
 } from '../components/createOrderPaymentProvider'
-import { useLogger } from '../components/utils/logger'
+import { LogParams } from '../components/utils/logger'
 
 const mockCashPayment = {
   payments: [
@@ -29,6 +29,28 @@ const mockCashPayment = {
       installmentsInterestRate: 0,
     },
   ],
+}
+
+const mockLog = jest.fn()
+
+function useLogger() {
+  const log = ({
+    type,
+    level,
+    event,
+    workflowType,
+    workflowInstance,
+  }: LogParams) => {
+    mockLog({
+      type,
+      level,
+      event,
+      workflowType,
+      workflowInstance,
+    })
+  }
+
+  return { log }
 }
 
 const mockUseUpdateOrderFormPayment = jest.fn().mockResolvedValue(true)
@@ -91,10 +113,31 @@ describe('OrderPayment', () => {
     const { current } = result
 
     await act(async () => {
-      const success = await current.setPaymentField(mockCashPayment.payments[0])
+      const { success } = await current.setPaymentField(
+        mockCashPayment.payments[0]
+      )
 
       expect(success).toBeTruthy()
     })
+    expect(mockUseUpdateOrderFormPayment).toHaveBeenCalled()
+  })
+
+  it('should log information when a payment cannot be updated', async () => {
+    const { Wrapper } = createWrapperOrderProviders()
+
+    const { result } = renderHook(() => useOrderPayment(), { wrapper: Wrapper })
+    const { current } = result
+
+    mockUseUpdateOrderFormPayment.mockRejectedValue({ code: 'TASK_CANCELLED' })
+
+    await act(async () => {
+      const { success } = await current.setPaymentField(
+        mockCashPayment.payments[0]
+      )
+
+      expect(success).toBeFalsy()
+    })
+    expect(mockLog).toHaveBeenCalled()
     expect(mockUseUpdateOrderFormPayment).toHaveBeenCalled()
   })
 })

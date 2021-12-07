@@ -1,8 +1,8 @@
-interface LogParams {
+export interface LogParams {
   type: 'Error'
   level: 'Critical'
   event: unknown
-  workflowType: 'OrderItems'
+  workflowType?: 'OrderPayment'
   workflowInstance: string
 }
 
