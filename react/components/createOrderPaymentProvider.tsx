@@ -8,7 +8,7 @@ import React, {
 } from 'react'
 import { OrderFormContext, OrderQueueContext } from '@vtex/order-manager'
 
-import { UseLogger } from './utils/logger'
+import { UseLogger } from '../utils/logger'
 import {
   OrderForm as CheckoutOrderForm,
   PaymentDataInput,

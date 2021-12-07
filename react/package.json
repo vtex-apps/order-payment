@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@apollo/react-testing": "^4.0.0",
+    "@vtex/order-manager": "^0.5.4-beta.0",
     "@types/classnames": "^2.2.7",
     "@types/jest": "^24.0.18",
     "@types/node": "^12.7.5",

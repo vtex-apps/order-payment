@@ -18,11 +18,12 @@ function useClearOrderFormMessages() {
     })
 }
 
-const useGetOrderForm = () => {
-  return () =>
-    new Promise(resolve => {
-      resolve(true)
+function useGetOrderForm(args: any): any {
+  return new Promise(resolve => {
+    resolve({
+      ...args,
     })
+  })
 }
 
 const { OrderFormProvider } = createOrderFormProvider({
