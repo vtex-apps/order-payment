@@ -1,6 +1,4 @@
-import { OrderForm } from '../typings'
-
-export const mockOrderForm = Object.freeze<OrderForm>({
+export const mockOrderForm = {
   id: '123',
   loggedIn: false,
   paymentData: {
@@ -43,7 +41,7 @@ export const mockOrderForm = Object.freeze<OrderForm>({
       skuSpecifications: [],
       attachmentOfferings: [],
       bundleItems: [],
-      isGift: false,
+
       attachments: [],
       offerings: [],
       priceTags: [],
@@ -132,4 +130,4 @@ export const mockOrderForm = Object.freeze<OrderForm>({
   },
   canEditData: false,
   value: 9585000,
-} as OrderForm)
+}

@@ -6,7 +6,7 @@ import React, {
   useState,
   useMemo,
 } from 'react'
-import { OrderFormContext, OrderQueueContext } from '@vtex/order-manager'
+import { OrderQueueContext } from '@vtex/order-manager'
 
 import { UseLogger } from '../utils/logger'
 import {
@@ -25,6 +25,20 @@ export const QueueStatus = {
   FULFILLED: 'Fulfilled',
 } as const
 
+type ListenFunction = (event: any, callback: () => void) => () => void
+interface QueueContext {
+  enqueue: (task: () => Promise<CheckoutOrderForm>, id?: string) => any
+  listen: ListenFunction
+  isWaiting: (id: string) => boolean
+}
+
+interface OrderContext {
+  loading: boolean
+  setOrderForm: (nextValue: Partial<CheckoutOrderForm>) => void
+  error: any | undefined
+  orderForm: CheckoutOrderForm
+}
+
 type UseUpdateOrderFormPayment = () => {
   updateOrderFormPayment: (
     paymentData: PaymentDataInput,
@@ -34,8 +48,8 @@ type UseUpdateOrderFormPayment = () => {
 
 interface CreateOrderPaymentProvider<O extends CheckoutOrderForm> {
   useLogger: UseLogger
-  useOrderQueue: () => OrderQueueContext<O>
-  useOrderForm: () => OrderFormContext<O>
+  useOrderQueue: () => QueueContext
+  useOrderForm: () => OrderContext
   useUpdateOrderFormPayment: UseUpdateOrderFormPayment
   useQueueStatus: (listen: OrderQueueContext<O>['listen']) => any
 }

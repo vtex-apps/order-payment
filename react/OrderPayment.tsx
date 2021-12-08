@@ -1,12 +1,12 @@
 import { useCallback } from 'react'
-import { OrderQueue } from 'vtex.order-manager'
+import { OrderQueue, OrderForm } from 'vtex.order-manager'
 import { useMutation } from 'react-apollo'
 import MutationUpdateOrderFormPayment from 'vtex.checkout-resources/MutationUpdateOrderFormPayment'
 import {
   OrderForm as CheckoutOrderForm,
   PaymentDataInput,
 } from 'vtex.checkout-graphql'
-import { useOrderForm, useOrderQueue } from '@vtex/order-manager'
+// import { useOrderForm } from '@vtex/order-manager'
 
 import {
   createOrderPaymentProvider,
@@ -22,7 +22,8 @@ interface UpdateOrderFormPaymentMutationVariables {
   paymentData: PaymentDataInput
 }
 
-const { useQueueStatus } = OrderQueue
+const { useOrderForm } = OrderForm
+const { useQueueStatus, useOrderQueue } = OrderQueue
 
 function useUpdateOrderFormPayment() {
   const [updateOrderFormPayment] = useMutation<
@@ -54,4 +55,5 @@ const { OrderPaymentProvider } = createOrderPaymentProvider({
   useQueueStatus,
 })
 
-export default { OrderPaymentProvider, useOrderPayment }
+export { useOrderPayment, OrderPaymentProvider }
+export default { useOrderPayment, OrderPaymentProvider }

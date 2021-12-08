@@ -19,7 +19,13 @@ export function useLogger() {
     workflowInstance,
   }: LogParams) => {
     // eslint-disable-next-line no-console
-    console.log({ type, level, event, workflowType, workflowInstance })
+    console.log({
+      type,
+      level,
+      event,
+      workflowInstance,
+      workflowType: workflowType || 'OrderPayment',
+    })
   }
 
   return { log }
