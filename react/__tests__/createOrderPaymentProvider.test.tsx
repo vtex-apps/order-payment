@@ -13,7 +13,7 @@ import {
   createOrderPaymentProvider,
   useOrderPayment,
 } from '../components/createOrderPaymentProvider'
-import { LogParams } from '../components/utils/logger'
+import { LogParams } from '../utils/logger'
 
 const mockCashPayment = {
   payments: [
