@@ -6,11 +6,7 @@ import React, {
   useState,
   useMemo,
 } from 'react'
-import {
-  OrderQueueContext,
-  OrderForm,
-  OrderFormContext,
-} from '@vtex/order-manager'
+import { OrderQueueContext, OrderForm } from '@vtex/order-manager'
 import {
   OrderForm as CheckoutOrderForm,
   PaymentDataInput,
@@ -29,32 +25,33 @@ export const QueueStatus = {
   FULFILLED: 'Fulfilled',
 } as const
 
-interface QueueContext<O extends OrderForm> {
-  enqueue: (task: () => Promise<O>, id?: string) => any
-  listen: (event: any, callback: () => void) => () => void
+type ListenFunction = (event: any, callback: () => void) => () => void
+interface QueueContext {
+  enqueue: (task: () => Promise<CheckoutOrderForm>, id?: string) => any
+  listen: ListenFunction
   isWaiting: (id: string) => boolean
 }
 
-interface OrderContext<O extends OrderForm> {
+interface OrderContext<O extends CheckoutOrderForm> {
   loading: boolean
-  setOrderForm: (nextValue: Partial<O>) => void
+  setOrderForm: (nextValue: Partial<CheckoutOrderForm>) => void
   error: any | undefined
   orderForm: O
 }
 
-type UseUpdateOrderFormPayment<O extends OrderForm> = () => {
+type UseUpdateOrderFormPayment = () => {
   updateOrderFormPayment: (
     paymentData: PaymentDataInput,
     orderFormId?: string
-  ) => Promise<O>
+  ) => Promise<CheckoutOrderForm>
 }
 
 interface CreateOrderPaymentProvider<O extends CheckoutOrderForm> {
   useLogger: UseLogger
-  useOrderQueue: () => QueueContext<O>
+  useOrderQueue: () => QueueContext
   useOrderForm: () => OrderContext<O>
-  useUpdateOrderFormPayment: UseUpdateOrderFormPayment<O>
-  useQueueStatus: (listen: OrderQueueContext<O>['listen']) => any
+  useUpdateOrderFormPayment: UseUpdateOrderFormPayment
+  useQueueStatus: (listen: OrderQueueContext<OrderForm>['listen']) => any
 }
 
 interface PaymentContext {
