@@ -6,9 +6,11 @@ import React, {
   useState,
   useMemo,
 } from 'react'
-import { OrderQueueContext } from '@vtex/order-manager'
-
-import { UseLogger } from '../utils/logger'
+import {
+  OrderQueueContext,
+  OrderForm,
+  OrderFormContext,
+} from '@vtex/order-manager'
 import {
   OrderForm as CheckoutOrderForm,
   PaymentDataInput,
@@ -18,43 +20,44 @@ import {
   Payment,
   PaymentInput,
   Totalizer,
-} from '../typings'
+} from '@vtex/checkout-types'
+
+import { UseLogger } from '../utils/logger'
 
 export const QueueStatus = {
   PENDING: 'Pending',
   FULFILLED: 'Fulfilled',
 } as const
 
-type ListenFunction = (event: any, callback: () => void) => () => void
-interface QueueContext {
-  enqueue: (task: () => Promise<CheckoutOrderForm>, id?: string) => any
-  listen: ListenFunction
+interface QueueContext<O extends OrderForm> {
+  enqueue: (task: () => Promise<O>, id?: string) => any
+  listen: (event: any, callback: () => void) => () => void
   isWaiting: (id: string) => boolean
 }
 
-interface OrderContext {
+interface OrderContext<O extends OrderForm> {
   loading: boolean
-  setOrderForm: (nextValue: Partial<CheckoutOrderForm>) => void
+  setOrderForm: (nextValue: Partial<O>) => void
   error: any | undefined
-  orderForm: CheckoutOrderForm
+  orderForm: O
 }
 
-type UseUpdateOrderFormPayment = () => {
+type UseUpdateOrderFormPayment<O extends OrderForm> = () => {
   updateOrderFormPayment: (
     paymentData: PaymentDataInput,
     orderFormId?: string
-  ) => Promise<CheckoutOrderForm>
+  ) => Promise<O>
 }
 
 interface CreateOrderPaymentProvider<O extends CheckoutOrderForm> {
   useLogger: UseLogger
-  useOrderQueue: () => QueueContext
-  useOrderForm: () => OrderContext
-  useUpdateOrderFormPayment: UseUpdateOrderFormPayment
+  useOrderQueue: () => QueueContext<O>
+  useOrderForm: () => OrderContext<O>
+  useUpdateOrderFormPayment: UseUpdateOrderFormPayment<O>
   useQueueStatus: (listen: OrderQueueContext<O>['listen']) => any
 }
 
-interface Context {
+interface PaymentContext {
   setPaymentField: (
     paymentField: Partial<PaymentInput>
   ) => Promise<{ success: boolean }>
@@ -73,15 +76,15 @@ interface Context {
 }
 
 const SET_PAYMENT_TASK = 'SetPaymentTask'
-const OrderPaymentContext = createContext<Context | undefined>(undefined)
+const OrderPaymentContext = createContext<PaymentContext | undefined>(undefined)
 
-export function createOrderPaymentProvider({
+export function createOrderPaymentProvider<T extends CheckoutOrderForm>({
   useLogger,
   useOrderQueue,
   useOrderForm,
   useUpdateOrderFormPayment,
   useQueueStatus,
-}: CreateOrderPaymentProvider<CheckoutOrderForm>) {
+}: CreateOrderPaymentProvider<T>) {
   const OrderPaymentProvider: FC = ({ children }) => {
     const { enqueue, listen } = useOrderQueue()
     const { orderForm, setOrderForm } = useOrderForm()
