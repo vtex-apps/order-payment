@@ -24,15 +24,17 @@ declare module 'vtex.render-runtime' {
     id: string
   }
 
+  type Obj = Record<string, string>
+
   export const ChildBlock: ComponentType<ChildBlockProps>
-  export const useChildBlock = function({ id: string }): object {}
+  export const useChildBlock = function({ id: string }): Obj {}
 
   export const Helmet: ReactElement
   export const Link: ReactType
   export const NoSSR: ReactElement
   export const RenderContextConsumer: ReactElement
   export const canUseDOM: boolean
-  export const withRuntimeContext: <TOriginalProps extends {}>(
+  export const withRuntimeContext: <TOriginalProps extends Obj>(
     Component: ComponentType<TOriginalProps & RenderContextProps>
   ) => ComponentType<TOriginalProps>
 }
